@@ -6,8 +6,18 @@ namespace App\Classes;
 
 class User
 {
+    /**
+     * Json file with user data
+     * @var string
+     */
     private $json = __DIR__ . '/../../users.json';
 
+    /**
+     * @param string $name
+     * @param string $phone
+     * @return array
+     * @throws \ErrorException
+     */
     public function addUser(string $name, string $phone) : array
     {
         if (!preg_match('/(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})/',$phone))
@@ -64,6 +74,11 @@ class User
         return $newUser;
     }
 
+    /**
+     * @param string $id
+     * @return object
+     * @throws \ErrorException
+     */
     public function getUserById (string $id) : object
     {
         try {
@@ -104,6 +119,10 @@ class User
         throw new \Exception('User with given Id doesn\'t exist');
     }
 
+    /**
+     * @return array
+     * @throws \ErrorException
+     */
     public function getAllUsers () : array
     {
         //К сожалению, придется считывать весь файл
@@ -118,6 +137,11 @@ class User
         return $content;
     }
 
+    /**
+     * @param string $id
+     * @return bool
+     * @throws \ErrorException
+     */
     public function deleteUserById (string $id)
     {
         //К сожалению php не предоставляет возможности редачить файлы на ходу, придется грузить весь файл.
@@ -144,6 +168,11 @@ class User
         throw new \Exception('User with given Id doesn\'t exist');
     }
 
+    /**
+     * @param array $newUserData
+     * @return array
+     * @throws \ErrorException
+     */
     public function updateUserById (array $newUserData) : array
     {
         //Аналогично с deleteUser
@@ -167,6 +196,11 @@ class User
         throw new \Exception('User with given Id doesn\'t exist');
     }
 
+    /**
+     * @param string $phone
+     * @return int
+     * @throws \ErrorException
+     */
     public function getUserIdByPhone (string $phone) : int
     {
         if (!preg_match('/(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})/',$phone))
@@ -210,7 +244,12 @@ class User
         throw new \Exception('User with given phone number doesn\'t exist');
     }
 
-    private function fileReadGen($file_resource,int $chunk)
+    /**
+     * @param $file_resource
+     * @param int $chunk
+     * @return \Generator
+     */
+    private function fileReadGen($file_resource, int $chunk)
     {
         for ($i = 0; $i < filesize($this->json); $i++) {
             yield fread($file_resource, $chunk);
