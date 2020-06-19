@@ -142,7 +142,7 @@ class User
      * @return bool
      * @throws \ErrorException
      */
-    public function deleteUserById (string $id)
+    public function deleteUserById (string $id) : bool
     {
         //К сожалению php не предоставляет возможности редачить файлы на ходу, придется грузить весь файл.
         //Это явно можно сделать системными утилитами, но я, к своему величайшему стыду, пока работаю с винды,
