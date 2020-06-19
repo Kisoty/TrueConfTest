@@ -1,23 +1,3 @@
-# Slim Framework 4 Skeleton Application
-
-[![Coverage Status](https://coveralls.io/repos/github/slimphp/Slim-Skeleton/badge.svg?branch=master)](https://coveralls.io/github/slimphp/Slim-Skeleton?branch=master)
-
-Use this skeleton application to quickly setup and start working on a new Slim Framework 4 application. This application uses the latest Slim 4 with Slim PSR-7 implementation and PHP-DI container implementation. It also uses the Monolog logger.
-
-This skeleton application was built for Composer. This makes setting up a new Slim Framework application quick and easy.
-
-## Install the Application
-
-Run this command from the directory in which you want to install your new Slim Framework application.
-
-```bash
-composer create-project slim/slim-skeleton [my-app-name]
-```
-
-Replace `[my-app-name]` with the desired directory name for your new application. You'll want to:
-
-* Point your virtual host document root to your new application's `public/` directory.
-* Ensure `logs/` is web writable.
 
 To run the application in development, you can run these commands 
 
@@ -32,11 +12,131 @@ cd [my-app-name]
 docker-compose up -d
 ```
 After that, open `http://localhost:8080` in your browser.
+___________________________________________________________________
 
-Run this command in the application directory to run the test suite
+Небольшая дока по API.
 
-```bash
-composer test
+###1. GetUserById
+Метод принимает GET-запрос с обязательным параметром id, являющимся целым числом.
+Возвращает данные пользователя с заданным Id.
+#####Пример запроса
+>http://localhost:8080/user/GetUserById?id=1
+#####Пример успешного ответа
+```json
+{
+     "message": "User found",
+     "data": {
+         "id": 1,
+         "name": "ayaya",
+         "phone": "77111111111"
+     }
+ }
 ```
 
-That's it! Now go build something cool.
+###2. GetUsers
+Метод принимает GET-запрос без параметров.
+Вьозвращает список пользователей.
+#####Пример запроса
+>http://localhost:8080/user/GetUsers
+#####Пример успешного ответа
+```json
+{
+    "message": "Users found",
+    "data": [
+        {
+            "id": 1,
+            "name": "ayaya",
+            "phone": "77111111111"
+        },
+        {
+            "id": 2,
+            "name": "ayaya",
+            "phone": "7111111111"
+        },
+        {
+            "id": 3,
+            "name": "ayaya",
+            "phone": "11111111111"
+        }
+    ]
+}
+```
+###3. AddUser
+Метод принимает POST-запрос. Тело запроса: json с двумя обязательными полями: name и phone.
+Создает нового пользователя, возвращает данные пользователя.
+#####Пример запроса
+>http://localhost:8080/user/AddUser
+```json
+{
+	"name":"oyoyo",
+	"phone":"77111111216"
+}
+```
+#####Пример успешного ответа
+```json
+{
+    "data": {
+        "id": 8,
+        "name": "oyoyo",
+        "phone": "77111111216"
+    }
+}
+```
+###4. DeleteUserById
+Метод принимает DELETE-запрос с обязательным параметром id, являющимся целым числом.
+Удаляет пользователя с данным id, о чем радостно оповещает.
+#####Пример запроса
+>http://localhost:8080/user/DeleteUserById?id=6
+#####Пример успешного ответа
+```json
+{
+    "message": "User deleted"
+}
+```
+
+###5. UpdateUserById
+Метод принимает PUT-запрос. Тело запроса: json с обязательным полем id, являющимся целым числом.
+Можно приправить полями phone и name по вкусу. 
+Обновляет поля phone/name, присваивая им переданные значения.
+Возвращает новые данные пользователя.
+#####Пример запроса
+>http://localhost:8080/user/UpdateUserById
+```json
+ {
+     "data": {
+         "id": "7",
+         "name": "oyoyo",
+         "phone": "77111111545"
+     }
+ }
+ ```
+#####Пример успешного ответа
+```json
+{
+    "data": {
+        "id": "7",
+        "name": "oyoyo",
+        "phone": "77111111545"
+    }
+}
+```
+###6. GetUserIdByPhone
+Метод принимает Get запрос с параметром phone, являющимся валидным номером телефона. 
+Можете поискать невалидный номер, который все равно пройдет проверку, но это непросто.
+#####Пример запроса
+>http://localhost:8080/user/GetUserIdByPhone?phone=77111111111
+#####Пример успешного ответа
+```json
+{
+    "message": "User found",
+    "data": {
+        "id": 1
+    }
+}
+```
+До работы над этим тестовым заданием я был совершенно не знаком с этим фреймворком,
+посему я явно не использовал большинство его возможностей, ибо за 3 дня хоть сколько-нибудь
+достойно изучить его явно не успел. ¯\_(ツ)_/¯
+
+Также непосредственно в коде есть несколько комментариев, 
+которые я бы с радостью обсудил на собеседовании :).

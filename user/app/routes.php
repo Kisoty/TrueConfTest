@@ -39,10 +39,10 @@ return function (App $app) {
 
     $app->get('/user/GetUserById', function (Request $request, Response $response) {
         $request_params = $request->getQueryParams();
-        if (empty($request_params['id']) || !is_numeric($request_params['id'])) {
-            $response_body = json_encode(['error' => 'Parameter Id should be a number']);
+        if (empty($request_params['id']) || filter_var($request_params['id'],FILTER_VALIDATE_INT) === false) {
+            $response_body = json_encode(['error' => 'Parameter Id should be an integer']);
             $response->getBody()->write($response_body);
-            return $response->withStatus(400, 'Id is not a number')->withHeader('Content-type', 'application/json');
+            return $response->withStatus(400, 'Id is not an integer')->withHeader('Content-type', 'application/json');
         } else {
             $user = new User();
             try {
@@ -83,52 +83,52 @@ return function (App $app) {
 
     $app->delete('/user/DeleteUserById', function (Request $request, Response $response) {
         $request_params = $request->getQueryParams();
-        $id = $request_params['id'];
-        if (empty($id) || !is_numeric($id)) {
-            $response_body = json_encode(['error' => 'Parameter Id should be a number']);
+        if (empty($request_params['id']) || filter_var($request_params['id'],FILTER_VALIDATE_INT) === false) {
+            $response_body = json_encode(['error' => 'Parameter Id should be an integer']);
             $response->getBody()->write($response_body);
-            return $response->withStatus(400, 'Id is not a number')->withHeader('Content-type', 'application/json');
+            return $response->withStatus(400, 'Id is not an integer')->withHeader('Content-Type', 'application/json');
         } else {
             $user = new User();
             try {
-                $user->deleteUserById($id);
+                $user->deleteUserById($request_params['id']);
                 $response->getBody()->write(json_encode(['message' => 'User deleted']));
                 return $response->withHeader('Content-Type', 'application/json');
             } catch (ErrorException $e) {
                 $response_body = json_encode(['error' => $e->getMessage()]);
                 $response->getBody()->write($response_body);
-                return $response->withHeader('Content-type', 'application/json')->withStatus(500, 'Server internal error');
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(500, 'Server internal error');
             } catch (Exception $e) {
                 $response_body = json_encode(['error' => $e->getMessage()]);
                 $response->getBody()->write($response_body);
                 //Аналогично с GetUserById
-                return $response->withHeader('Content-type', 'application/json');
+                return $response->withHeader('Content-Type', 'application/json');
             }
         }
     });
 
     $app->put('/user/UpdateUserById', function (Request $request, Response $response) {
         $newUserDataRequest = $request->getParsedBody();
-        if (empty($newUserDataRequest['id']) || !is_numeric($newUserDataRequest['id'])) {
-            $response_body = json_encode(['error' => 'Parameter Id should be a number']);
+
+        if (empty($newUserDataRequest['id']) || filter_var($newUserDataRequest['id'],FILTER_VALIDATE_INT) === false) {
+            $response_body = json_encode(['error' => 'Parameter Id should be an integer']);
             $response->getBody()->write($response_body);
-            return $response->withStatus(400, 'Id is not a number')->withHeader('Content-type', 'application/json');
+            return $response->withStatus(400, 'Id is not an integer')->withHeader('Content-Type', 'application/json');
         }
         $user = new User();
         try {
             $newData = $user->updateUserById($newUserDataRequest);
             $response_body = json_encode(['data' => $newData]);
             $response->getBody()->write($response_body);
-            return $response->withHeader('Content-type', 'application/json')->withStatus(200, 'User data updated');
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(200, 'User data updated');
         } catch (ErrorException $e) {
             $response_body = json_encode(['error' => $e->getMessage()]);
             $response->getBody()->write($response_body);
-            return $response->withHeader('Content-type', 'application/json')->withStatus(500, 'Server internal error');
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500, 'Server internal error');
         } catch (Exception $e) {
             $response_body = json_encode(['error' => $e->getMessage()]);
             $response->getBody()->write($response_body);
             //Аналогично с GetUserById и DeleteUserById
-            return $response->withHeader('Content-type', 'application/json');
+            return $response->withHeader('Content-Type', 'application/json');
         }
     });
 
@@ -145,7 +145,7 @@ return function (App $app) {
                 $user_id = $user->getUserIdByPhone($phone);
                 $response_body = json_encode(['message' => 'User found', 'data' => ['id' => $user_id]]);
                 $response->getBody()->write($response_body);
-                return $response->withHeader('Content-type', 'application/json');
+                return $response->withHeader('Content-Type', 'application/json');
             } catch (ErrorException $e) {
                 $response_body = json_encode(['error' => $e->getMessage()]);
                 $response->getBody()->write($response_body);
@@ -154,9 +154,14 @@ return function (App $app) {
                 $response_body = json_encode(['error' => $e->getMessage()]);
                 $response->getBody()->write($response_body);
                 //Аналогично, что и GetUserById, DeleteUserById и UpdateUserById
-                return $response->withHeader('Content-type', 'application/json');
+                return $response->withHeader('Content-Type', 'application/json');
             }
         }
+    });
+
+    $app->get('/', function (Request $request, Response $response) {
+        $response->getBody()->write('Nothing to do here...');
+        return $response->withHeader('Content-Type','html');
     });
 
 };

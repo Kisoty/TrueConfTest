@@ -175,6 +175,18 @@ class User
      */
     public function updateUserById (array $newUserData) : array
     {
+        if (!empty($newUserData['phone'])) {
+            $phone = $newUserData['phone'];
+            if (!preg_match('/(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})/', $phone))
+                throw new \InvalidArgumentException('Insert correct phone number');
+        } else {
+            unset($newUserData['phone']);
+        }
+
+        //Тут и чуть выше неочевидный момент: если поле приходит пустым, перезаписывать ли его, молча пропускать либо кидать эксепшн.
+        if (empty($newUserData['name']))
+            unset($newUserData['name']);
+
         //Аналогично с deleteUser
         try {
             $user_list = json_decode(file_get_contents($this->json));
@@ -182,9 +194,12 @@ class User
             throw new \ErrorException($e->getMessage());
         }
 
-        foreach ($user_list as $key => $user) {
+        foreach ($user_list as $key => &$user) {
             if ($user->id == $newUserData['id']) {
-                $user_list[$key] = $newUserData;
+                ob_start();
+                foreach ($newUserData as $k => $param) {
+                    $user->{$k} = $param;
+                }
                 try {
                     file_put_contents($this->json, json_encode($user_list));
                 } catch (\Exception $e) {
